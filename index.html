@@ -528,6 +528,74 @@
     </div>
   </footer>
 
+  <!-- ==========================================================================
+       AIチャットボット埋め込み（Dify埋め込みの例）
+       右下の丸ボタンを押すと開閉するパネルの中にiframeでボットを表示している。
+       実際の案件では src のURLを、その店舗用に作ったDifyボットのURLに差し替える。
+       ========================================================================== -->
+  <div class="chatbot-widget">
+    <button id="chatbotToggle" class="chatbot-toggle" aria-label="チャットを開く">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.4 8.5 8.5 0 0 1-4-1L3 20l1.1-5.5a8.4 8.4 0 0 1-1-4A8.38 8.38 0 0 1 11.5 2 8.5 8.5 0 0 1 21 11.5z"></path>
+      </svg>
+    </button>
+
+    <div id="chatbotPanel" class="chatbot-panel">
+      <div class="chatbot-panel-header">
+        <span>お問い合わせ（AIチャットボット）</span>
+        <button id="chatbotClose" class="chatbot-panel-close" aria-label="閉じる">&times;</button>
+      </div>
+      <iframe
+        src="https://udify.app/chatbot/OF7UF0uvvuwyKdQw"
+        style="width: 100%; height: 100%; min-height: 700px"
+        frameborder="0"
+        allow="microphone;clipboard-write">
+      </iframe>
+    </div>
+  </div>
+
+  <style>
+    .chatbot-widget { position: fixed; right: 24px; bottom: 24px; z-index: 9999; }
+    .chatbot-toggle {
+      width: 56px; height: 56px; border-radius: 50%; border: none; cursor: pointer;
+      background: #2f2a26; color: #fff; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25); transition: transform .2s ease;
+    }
+    .chatbot-toggle:hover { transform: scale(1.06); }
+    .chatbot-panel {
+      position: fixed; right: 24px; bottom: 92px;
+      width: 380px; max-width: 90vw; height: 600px; max-height: 70vh;
+      background: #fff; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.25);
+      display: none; flex-direction: column;
+    }
+    .chatbot-panel.is-open { display: flex; }
+    .chatbot-panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; background: #2f2a26; color: #fff; font-size: 0.85rem;
+    }
+    .chatbot-panel-close { background: none; border: none; color: #fff; font-size: 1.3rem; line-height: 1; cursor: pointer; }
+    .chatbot-panel iframe { flex: 1; border: none; }
+    @media (max-width: 480px) {
+      .chatbot-panel { right: 12px; left: 12px; width: auto; bottom: 88px; }
+    }
+  </style>
+
+  <script>
+    // チャットボットの開閉だけを行う最小限のスクリプト
+    (function () {
+      var toggle = document.getElementById('chatbotToggle');
+      var panel = document.getElementById('chatbotPanel');
+      var closeBtn = document.getElementById('chatbotClose');
+      toggle.addEventListener('click', function () {
+        panel.classList.toggle('is-open');
+      });
+      closeBtn.addEventListener('click', function () {
+        panel.classList.remove('is-open');
+      });
+    })();
+  </script>
+
   <!-- Scripts -->
   <script src="js/main.js"></script>
 </body>
