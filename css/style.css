@@ -1,0 +1,1188 @@
+/* ==========================================================================
+   宵の宿 蒸 - MUSU HOTEL & RETREAT -
+   Inspired by musu-sauna.com
+   自然と寝落ちする幸せ。古民家・里山サウナ＆安眠リトリート
+   ========================================================================== */
+
+:root {
+  /* Colors */
+  --bg-primary: #f6f5f3;        /* 明るい生成りグレー */
+  --bg-secondary: #eeebe6;      /* セクション背景用・淡いアースグレー */
+  --bg-card: #ffffff;           /* 清潔な白 */
+  --bg-dark: #211815;           /* musu-sauna象徴の墨黒 */
+  
+  --text-main: #211815;         /* 落ち着きのある墨黒 */
+  --text-sub: #544b47;          /* チャコールブラウン */
+  --text-muted: #827974;        /* 注釈・キャプション */
+  
+  --border-main: #dedad5;       /* 柔らかな境界線 */
+  --border-dark: #211815;
+  --border-light: #ece9e4;
+  
+  --accent-wood: #8c735d;       /* 杉・檜のウッドアクセント */
+  --accent-steam: #a49a93;
+  
+  /* Fonts */
+  --font-serif: 'Shippori Mincho', 'Noto Serif JP', 'Yu Mincho', serif;
+  --font-sans: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-num: 'Outfit', 'TikTok Sans', 'Inter', sans-serif;
+
+  /* Header Height */
+  --header-height: 84px;
+  
+  /* Organic Border Radius (手書き・クラフト感) */
+  --radius-organic-1: 255px 15px 225px 15px/15px 225px 15px 255px;
+  --radius-organic-2: 15px 255px 15px 225px/225px 15px 255px 15px;
+  --radius-sm: 4px;
+  --radius-md: 10px;
+}
+
+/* Reset & Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-height) + 24px);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  line-height: 1.95;
+  letter-spacing: 0.06em;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* 背景の微細な和紙風グラデーション */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 25%, rgba(255, 255, 255, 0.7) 0%, rgba(246, 245, 243, 0.3) 100%);
+  z-index: -1;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+button, input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.u-num {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Layout Containers */
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.container-narrow {
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.container-wide {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ==========================================================================
+   アニメーション：文字の動き (SplitText & Typo Animations)
+   ========================================================================== */
+
+/* 1文字ずつのアニメーション基本スタイル */
+.split-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(26px) rotate(2.5deg);
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(var(--char-i, 0) * 0.045s);
+  will-change: transform, opacity;
+}
+
+.is-visible .split-char,
+.is-visible.split-char {
+  opacity: 1;
+  transform: translateY(0) rotate(0deg);
+}
+
+/* 句点（。）のぽんと弾むアニメーション */
+.split-char.is-dot {
+  color: var(--accent-wood);
+  font-weight: 700;
+  transform: translateY(26px) scale(0.6);
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-delay: calc(var(--char-i, 0) * 0.045s + 0.1s);
+}
+
+.is-visible .split-char.is-dot {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* 上品なフェードアップ要素（行・ブロック単位） */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.reveal-up.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ディレイバリエーション */
+.delay-1 { transition-delay: 0.15s; }
+.delay-2 { transition-delay: 0.3s; }
+.delay-3 { transition-delay: 0.45s; }
+
+/* 湯気（ゆらゆら動くスチームライン） */
+.steam-icon {
+  display: inline-block;
+  animation: steamDrift 3.6s ease-in-out infinite alternate;
+  transform-origin: bottom center;
+}
+
+@keyframes steamDrift {
+  0% {
+    transform: translateY(0) scaleY(1) rotate(0deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-4px) scaleY(1.08) rotate(1.5deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-7px) scaleY(1.15) rotate(-1.5deg);
+    opacity: 0.8;
+  }
+}
+
+/* スクロールインジケーター（↓） */
+.scroll-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 32px auto 0;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.scroll-line {
+  width: 1px;
+  height: 36px;
+  background-color: var(--border-main);
+  position: relative;
+  overflow: hidden;
+}
+
+.scroll-line::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--text-main);
+  animation: scrollDown 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes scrollDown {
+  0% { transform: translateY(-100%); }
+  50% { transform: translateY(0%); }
+  100% { transform: translateY(100%); }
+}
+
+/* ==========================================================================
+   Header (暖簾モチーフ & 常時表示ボタン)
+   ========================================================================== */
+
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height);
+  background-color: rgba(246, 245, 243, 0.96);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-main);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+/* 暖簾の装飾ライン */
+.site-header::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--border-main),
+    var(--border-main) 60px,
+    transparent 60px,
+    transparent 66px
+  );
+  opacity: 0.6;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* ロゴ */
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-symbol {
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid var(--text-main);
+  border-radius: var(--radius-organic-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  background-color: #ffffff;
+  color: var(--text-main);
+  animation: organicBreathe 5s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+.brand-logo:hover .logo-symbol {
+  transform: scale(1.08) rotate(3deg);
+}
+
+.logo-text-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-title {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  line-height: 1.2;
+}
+
+.logo-sub {
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* ナビゲーション */
+.site-nav {
+  display: flex;
+  align-items: center;
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  gap: 32px;
+}
+
+.nav-item a {
+  font-family: var(--font-serif);
+  font-size: 0.92rem;
+  letter-spacing: 0.14em;
+  color: var(--text-sub);
+  position: relative;
+  padding: 6px 0;
+  font-weight: 500;
+}
+
+.nav-item a:hover,
+.nav-item a.active {
+  color: var(--text-main);
+}
+
+.nav-item a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background-color: var(--text-main);
+  transition: width 0.3s ease;
+}
+
+.nav-item a:hover::after,
+.nav-item a.active::after {
+  width: 100%;
+}
+
+/* 常時上に表示されるボタングループ */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* オーガニック手描き風ボタン（呼吸するゆらぎアニメーション付き） */
+.btn-organic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 22px;
+  font-family: var(--font-serif);
+  font-size: 0.88rem;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  border-radius: var(--radius-organic-1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  animation: organicBreathe 6s ease-in-out infinite;
+  position: relative;
+}
+
+/* ボタンの有機的なゆらぎ（生き物のような手描き呼吸） */
+@keyframes organicBreathe {
+  0% {
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  }
+  33% {
+    border-radius: 20px 245px 18px 235px/245px 18px 235px 20px;
+  }
+  66% {
+    border-radius: 235px 25px 250px 18px/22px 240px 16px 245px;
+  }
+  100% {
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  }
+}
+
+/* 料金表ボタン（白地・墨黒手描き枠） */
+.btn-organic-outline {
+  background-color: #ffffff;
+  color: var(--text-main);
+  border: 1.5px solid var(--text-main);
+  box-shadow: 1px 2px 0px rgba(33, 24, 21, 0.08);
+}
+
+.btn-organic-outline:hover {
+  background-color: var(--bg-secondary);
+  transform: translateY(-2px);
+  box-shadow: 2px 4px 10px rgba(33, 24, 21, 0.12);
+}
+
+/* ご予約ボタン（墨黒ベタ・白文字） */
+.btn-organic-solid {
+  background-color: var(--bg-dark);
+  color: #ffffff;
+  border: 1.5px solid var(--bg-dark);
+  box-shadow: 1px 2px 6px rgba(33, 24, 21, 0.2);
+}
+
+.btn-organic-solid:hover {
+  background-color: #3e322d;
+  border-color: #3e322d;
+  transform: translateY(-2px);
+  box-shadow: 2px 6px 14px rgba(33, 24, 21, 0.25);
+}
+
+/* ==========================================================================
+   Hero Section
+   ========================================================================== */
+
+.hero-section {
+  padding-top: calc(var(--header-height) + 50px);
+  padding-bottom: 50px;
+  text-align: center;
+  position: relative;
+}
+
+.hero-badge {
+  display: inline-block;
+  font-size: 0.76rem;
+  letter-spacing: 0.3em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-main);
+  padding-bottom: 4px;
+  margin-bottom: 28px;
+}
+
+/* メイン見出し：自然と寝落ちする幸せ。 */
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.3rem, 5.8vw, 3.5rem);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--text-main);
+  line-height: 1.4;
+  margin-bottom: 24px;
+  position: relative;
+  display: inline-block;
+  cursor: default;
+}
+
+.hero-title:hover .split-char {
+  transform: translateY(-3px) rotate(-1deg);
+  transition: transform 0.3s ease;
+}
+
+.hero-lead {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  color: var(--text-sub);
+  line-height: 2.2;
+  max-width: 660px;
+  margin: 0 auto 20px;
+  word-break: keep-all;
+}
+
+/* ==========================================================================
+   写真 → 文章 → 写真 → 文章 の繰り返しレイアウト ＆ 動き
+   ========================================================================== */
+
+.story-flow {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 写真カードの演出（ふわっと浮き上がり ＆ ホバー時の穏やかな呼吸） */
+.flow-photo {
+  width: 100%;
+  padding: 36px 0;
+}
+
+.photo-card {
+  width: 100%;
+  background-color: var(--bg-card);
+  padding: 18px 18px 22px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-main);
+  box-shadow: 0 4px 20px rgba(33, 24, 21, 0.04);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.photo-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(33, 24, 21, 0.09);
+  border-color: #ccc6be;
+}
+
+.photo-frame-inner {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 2px;
+  position: relative;
+}
+
+.photo-card-img {
+  width: 100%;
+  height: 520px;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.04);
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.photo-card:hover .photo-card-img {
+  transform: scale(1);
+}
+
+.photo-card-caption {
+  margin-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+
+.photo-card-caption .tag {
+  font-family: var(--font-serif);
+  border: 1px solid var(--border-main);
+  padding: 2px 10px;
+  border-radius: var(--radius-organic-1);
+  background-color: var(--bg-primary);
+}
+
+/* 文章ブロック */
+.flow-text {
+  width: 100%;
+  padding: 76px 0 84px;
+  position: relative;
+}
+
+.flow-text.bg-subtle {
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-main);
+  border-bottom: 1px solid var(--border-main);
+}
+
+.text-card {
+  max-width: 740px;
+  margin: 0 auto;
+}
+
+.text-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.text-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 1px;
+  background-color: var(--text-muted);
+}
+
+.text-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.65rem, 3.5vw, 2.25rem);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  line-height: 1.5;
+  color: var(--text-main);
+  margin-bottom: 24px;
+}
+
+.text-lead {
+  font-family: var(--font-serif);
+  font-size: 1.08rem;
+  color: var(--text-main);
+  line-height: 2.1;
+  margin-bottom: 22px;
+  font-weight: 500;
+}
+
+.text-content {
+  font-size: 0.96rem;
+  color: var(--text-sub);
+  line-height: 2.2;
+}
+
+.text-content p + p {
+  margin-top: 18px;
+}
+
+/* 特徴カード・グリッド */
+.card-grid-two {
+  margin-top: 36px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.card-feature {
+  background-color: #ffffff;
+  border: 1.5px solid var(--border-main);
+  padding: 26px;
+  border-radius: var(--radius-organic-1);
+  box-shadow: 0 2px 12px rgba(33, 24, 21, 0.03);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.card-feature:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(33, 24, 21, 0.08);
+  border-color: #cfc8be;
+}
+
+.card-feature h4 {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+  color: var(--text-main);
+}
+
+.card-feature p {
+  font-size: 0.88rem;
+  color: var(--text-sub);
+  line-height: 1.9;
+}
+
+/* ==========================================================================
+   料金表セクション (Price Section)
+   ========================================================================== */
+
+.price-section {
+  padding: 100px 0;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-main);
+  border-bottom: 1px solid var(--border-main);
+}
+
+.section-head-center {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 50px;
+}
+
+.section-head-center .sec-en {
+  font-size: 0.78rem;
+  letter-spacing: 0.28em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.section-head-center .sec-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 3.2vw, 2.1rem);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: var(--text-main);
+  margin-bottom: 14px;
+}
+
+.section-head-center .sec-desc {
+  font-size: 0.94rem;
+  color: var(--text-sub);
+  line-height: 2;
+}
+
+.price-table-wrapper {
+  background-color: #ffffff;
+  border: 1.5px solid var(--border-dark);
+  border-radius: var(--radius-md);
+  padding: 38px 34px;
+  margin-bottom: 32px;
+  box-shadow: 0 6px 24px rgba(33, 24, 21, 0.05);
+}
+
+.price-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--border-dark);
+  padding-bottom: 18px;
+  margin-bottom: 24px;
+}
+
+.price-table-title {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  letter-spacing: 0.12em;
+  color: var(--text-main);
+}
+
+.price-table-tag {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.musu-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+}
+
+.musu-table th, 
+.musu-table td {
+  padding: 16px 20px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-main);
+}
+
+.musu-table thead th {
+  font-family: var(--font-serif);
+  font-size: 0.88rem;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--border-main);
+  font-weight: 500;
+}
+
+.musu-table tbody tr {
+  transition: background-color 0.25s ease;
+}
+
+.musu-table tbody tr:hover {
+  background-color: rgba(246, 245, 243, 0.8);
+}
+
+.musu-table .col-people {
+  width: 28%;
+  font-weight: 500;
+}
+
+.musu-table .col-people .num {
+  font-family: var(--font-num);
+  font-size: 1.15rem;
+  margin-right: 4px;
+}
+
+.musu-table .col-total {
+  width: 36%;
+  font-family: var(--font-num);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.musu-table .col-unit {
+  width: 36%;
+  font-family: var(--font-num);
+  font-size: 1.05rem;
+  color: var(--text-sub);
+}
+
+.musu-table .badge-recommend {
+  display: inline-block;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  background-color: var(--bg-dark);
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: var(--radius-organic-1);
+  margin-left: 8px;
+  vertical-align: middle;
+  font-family: var(--font-sans);
+}
+
+.price-notes-box {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-main);
+  border-radius: var(--radius-sm);
+  padding: 20px 24px;
+  font-size: 0.86rem;
+  color: var(--text-sub);
+  line-height: 1.9;
+}
+
+.price-notes-box ul {
+  list-style: none;
+  margin-top: 6px;
+}
+
+.price-notes-box li::before {
+  content: '・';
+  margin-right: 2px;
+}
+
+/* ==========================================================================
+   お問い合わせフォーム (Contact Section)
+   ========================================================================== */
+
+.contact-section {
+  padding: 100px 0;
+  background-color: var(--bg-primary);
+}
+
+.form-box {
+  background-color: #ffffff;
+  border: 1.5px solid var(--border-dark);
+  border-radius: var(--radius-md);
+  padding: 44px;
+  box-shadow: 0 6px 24px rgba(33, 24, 21, 0.04);
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-grid-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-label {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 0.88rem;
+  letter-spacing: 0.08em;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.req-badge {
+  font-size: 0.68rem;
+  background-color: var(--bg-dark);
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: var(--radius-organic-1);
+  margin-left: 6px;
+}
+
+.opt-badge {
+  font-size: 0.68rem;
+  background-color: var(--bg-secondary);
+  color: var(--text-muted);
+  padding: 2px 6px;
+  border-radius: var(--radius-organic-1);
+  margin-left: 6px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: #ffffff;
+  border: 1px solid var(--border-main);
+  border-radius: var(--radius-sm);
+  font-size: 0.94rem;
+  color: var(--text-main);
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--text-main);
+  box-shadow: 0 0 0 2px rgba(33, 24, 21, 0.08);
+}
+
+textarea.form-input {
+  resize: vertical;
+  min-height: 130px;
+}
+
+.form-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.form-check input[type="checkbox"] {
+  margin-top: 4px;
+  accent-color: var(--text-main);
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+}
+
+.form-check label {
+  font-size: 0.86rem;
+  color: var(--text-sub);
+  line-height: 1.6;
+  cursor: pointer;
+}
+
+.btn-form-submit {
+  width: 100%;
+  padding: 16px;
+  font-size: 0.98rem;
+  letter-spacing: 0.16em;
+}
+
+/* 送信完了トースト */
+.toast-notice {
+  display: none;
+  background-color: var(--bg-dark);
+  color: #ffffff;
+  padding: 20px 24px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 24px;
+  text-align: center;
+  animation: toastFade 0.35s ease;
+}
+
+.toast-notice h4 {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  margin-bottom: 4px;
+}
+
+.toast-notice p {
+  font-size: 0.86rem;
+  color: #dcd7d3;
+}
+
+@keyframes toastFade {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   ご予約モーダル (Reservation Modal)
+   ========================================================================== */
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(33, 24, 21, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.modal-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content-box {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 580px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-dark);
+  padding: 40px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-backdrop.active .modal-content-box {
+  transform: translateY(0);
+}
+
+.modal-btn-close {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.modal-btn-close:hover {
+  color: var(--text-main);
+}
+
+.modal-title-main {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  letter-spacing: 0.12em;
+  margin-bottom: 6px;
+  color: var(--text-main);
+}
+
+.modal-sub-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+.site-footer {
+  background-color: var(--bg-dark);
+  color: #e5e0dc;
+  padding: 70px 0 32px;
+  border-top: 2px solid var(--accent-wood);
+}
+
+.footer-cols {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 50px;
+}
+
+.footer-brand .footer-logo {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  letter-spacing: 0.2em;
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+.footer-brand p {
+  font-size: 0.85rem;
+  color: #a89f99;
+  line-height: 2;
+  max-width: 380px;
+}
+
+.footer-col h5 {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  letter-spacing: 0.15em;
+  color: #ffffff;
+  margin-bottom: 18px;
+}
+
+.footer-col ul {
+  list-style: none;
+}
+
+.footer-col li {
+  margin-bottom: 10px;
+}
+
+.footer-col a {
+  font-size: 0.86rem;
+  color: #a89f99;
+  transition: all 0.2s ease;
+}
+
+.footer-col a:hover {
+  color: #ffffff;
+  padding-left: 4px;
+}
+
+.footer-bottom-line {
+  border-top: 1px solid #362c28;
+  padding-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  color: #827873;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 860px) {
+  :root {
+    --header-height: 74px;
+  }
+  
+  .site-nav .nav-list {
+    display: none;
+  }
+  
+  .photo-card-img {
+    height: 380px;
+  }
+  
+  .card-grid-two,
+  .form-grid-two,
+  .footer-cols {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .price-table-wrapper {
+    padding: 24px 18px;
+  }
+  
+  .form-box {
+    padding: 28px 20px;
+  }
+  
+  .modal-content-box {
+    padding: 30px 20px;
+  }
+}
+
+@media (max-width: 580px) {
+  .btn-organic {
+    padding: 7px 13px;
+    font-size: 0.78rem;
+  }
+  
+  .logo-title {
+    font-size: 1.02rem;
+  }
+  
+  .logo-symbol {
+    width: 32px;
+    height: 32px;
+    font-size: 1.05rem;
+  }
+  
+  .photo-card-img {
+    height: 260px;
+  }
+  
+  .photo-card {
+    padding: 10px 10px 14px;
+  }
+  
+  .flow-photo {
+    padding: 20px 0;
+  }
+  
+  .flow-text {
+    padding: 40px 0 50px;
+  }
+  
+  .musu-table th, 
+  .musu-table td {
+    padding: 12px 10px;
+    font-size: 0.82rem;
+  }
+  
+  .musu-table .col-total {
+    font-size: 1.05rem;
+  }
+  
+  .footer-bottom-line {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+}
